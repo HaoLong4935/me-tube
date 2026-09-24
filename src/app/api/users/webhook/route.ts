@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     console.log("🔥 WEBHOOK CALLED")
     const SIGNING_SECRET = process.env.CLERK_SIGNING_SECRET
 
-    // console.log("SIGNING_SECRET:", SIGNING_SECRET)
+    console.log("SIGNING_SECRET:", SIGNING_SECRET)
 
     if (!SIGNING_SECRET) {
         throw new Error("Please add CLERK_SIGNING_SECRET from Clerk Dashboard")
@@ -19,10 +19,10 @@ export async function POST(req: Request) {
     // Get headers
     const headerPayload = await headers()
 
-    // console.log("==== WEBHOOK HEADERS ====")
-    // console.log("svix-id:", headerPayload.get("svix-id"))
-    // console.log("svix-timestamp:", headerPayload.get("svix-timestamp"))
-    // console.log("svix-signature:", headerPayload.get("svix-signature"))
+    console.log("==== WEBHOOK HEADERS ====")
+    console.log("svix-id:", headerPayload.get("svix-id"))
+    console.log("svix-timestamp:", headerPayload.get("svix-timestamp"))
+    console.log("svix-signature:", headerPayload.get("svix-signature"))
 
     const svix_id = headerPayload.get('svix-id')
     const svix_timestamp = headerPayload.get('svix-timestamp')
@@ -39,9 +39,9 @@ export async function POST(req: Request) {
     // const payload = await req.json()
     // const body = JSON.stringify(payload)
 
-    // console.log('svix-id:', svix_id)
-    // console.log('svix-timestamp:', svix_timestamp)
-    // console.log('svix-signature:', svix_signature)
+    console.log('svix-id:', svix_id)
+    console.log('svix-timestamp:', svix_timestamp)
+    console.log('svix-signature:', svix_signature)
 
     let evt: WebhookEvent
 
@@ -80,11 +80,15 @@ export async function POST(req: Request) {
     }
 
     if (eventType === "user.updated") {
-        const { data } = evt
-        await db.update(users).set({
-            name: `${data.first_name} ${data.last_name}`,
-            imageUrl: data.image_url
-        })
+        const { data } = evt;
+
+        await db
+            .update(users)
+            .set({
+                name: `${data.first_name} ${data.last_name}`,
+                imageUrl: data.image_url,
+            })
+            .where(eq(users.clerkId, data.id));
     }
 
     return new Response("Webhook received", { status: 200 })
