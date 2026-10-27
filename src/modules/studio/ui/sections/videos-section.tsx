@@ -12,14 +12,25 @@ import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { GlobeIcon, LockIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { VideoPlayerSkeleton } from "@/modules/videos/ui/components/video-player";
+import { VideoTopRowSkeleton } from "@/modules/videos/ui/components/video-top-row";
 
 export const VideosSection = () => {
     return (
         <Suspense fallback={<VideosSectionSkeleton />}>
-            <ErrorBoundary fallback={<p>Error</p>}>
+            <ErrorBoundary fallback={<VideoSectionSkeleton />}>
                 <VideosSectionSuspense />
             </ErrorBoundary>
         </Suspense>
+    )
+}
+
+const VideoSectionSkeleton = () => {
+    return (
+        <>
+            <VideoPlayerSkeleton />
+            <VideoTopRowSkeleton />
+        </>
     )
 }
 
